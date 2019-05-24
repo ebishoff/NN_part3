@@ -3,6 +3,10 @@ import os
 import collections
 from six.moves import cPickle
 import numpy as np
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.model_selection import train_test_split 
+from scipy.linalg import hankel
+import pickle
 
 """
 Implement a class object that should have the following functions:
@@ -60,12 +64,21 @@ class TextLoader():
             v.append(self.vocab[i])
         v=np.array(v)
 
-        #split training and validation data
+        #split training and validation data with integer valeus
+#         if one_hot==False:
         new_data=hankel(v[0:sequence_length],v[sequence_length:])
-        x=new_data[0:-1]
-        y=new_data[-1]
+        x=new_data[0:sequence_length]
+        #y=new_data[1:]
         x=np.transpose(x)
-        x_train, x_val, y_train, y_val=train_test_split(x,y,test_size=.1,shuffle=False,stratify=None)
+#         else:
+#             new_data=hankel(v[0:sequence_length],v[sequence_length:])
+#             x=new_data[0:-1]
+#             y=new_data[-1]
+#             x=np.transpose(x) 
+#             enc=OneHotEncoder()
+#             mod_hot=enc.fit_tra
+            
+        x_train, x_val=train_test_split(x,test_size=.1,shuffle=False,stratify=None)
         
         #save self.char as pickle(pkl) file 
         with open('char_shakespeare.pkl','wb') as fo:
@@ -73,29 +86,29 @@ class TextLoader():
         
         np.save('x_train_integer_data.npy',x_train)
         np.save('x_val_integer_data.npy',x_val)
-        np.save('y_train_integer_data.npy',y_train)
-        np.save('y_val_integer_data.npy',y_val)
+        #np.save('y_train_integer_data.npy',y_train)
+        #np.save('y_val_integer_data.npy',y_val)
         
     def load_preprocessed_data(filename):
         with open(filename,'rb') as file:
             preprocessed_data=np.load(file)
         return preprocessed_data
         
-    def mini_batch(x_data,y_data,batch_size):
+    def mini_batch(x_data,mini_batch_size):
 #batch size is number of samples in each iteration 
-        features, labels=utils.shuffle(x_data,y_data)
-        data_size=np.shape(labels)[0]
+        features=x_data
+        data_size=np.shape(features)[0]
         its=data_size//mini_batch_size
         i=0
         j=mini_batch_size
         k=0
         while k != its:
             mb_features=features[i:j,:]
-            mb_labels=labels[i:j,:]
+            #mb_labels=labels[i:j,:]
             i+=mini_batch_size
             j+=mini_batch_size
             k+=1
-            yield mb_features, mb_labels
+            yield mb_features
 
         
             
