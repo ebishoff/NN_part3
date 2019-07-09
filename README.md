@@ -1,2 +1,2 @@
 # NN_part3
-Understanding CNN's and creating RNN's
+Character-level text generation. Implement a multi-layer RNN to generate text character by character.
